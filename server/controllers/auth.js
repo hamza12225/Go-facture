@@ -14,6 +14,7 @@ export const register = async (req, res) => {
       friends,
       location,
       occupation,
+      role
     } = req.body;
 
     const salt = await bcrypt.genSalt();
@@ -30,6 +31,7 @@ export const register = async (req, res) => {
       occupation,
       viewedProfile: Math.floor(Math.random() * 10000),
       impressions: Math.floor(Math.random() * 10000),
+      role,
     });
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
@@ -40,6 +42,7 @@ export const register = async (req, res) => {
 
 /* LOGGING IN */
 export const login = async (req, res) => {
+  const JWT_SECRET = 'lolomatrix';
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
@@ -48,7 +51,7 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials. " });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, JWT_SECRET);
     delete user.password;
     res.status(200).json({ token, user });
   } catch (err) {

@@ -15,6 +15,10 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
+import { Checkbox } from "@mui/material";
+import { Label } from "@mui/icons-material";
+import { Select ,MenuItem} from "@mui/material";
+
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -24,6 +28,10 @@ const registerSchema = yup.object().shape({
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
   picture: yup.string().required("required"),
+  role: yup
+    .string()
+    .oneOf(["utilisateur", "admin", "directeur", "secrétaire"])
+    .required("required"),
 });
 
 const loginSchema = yup.object().shape({
@@ -39,6 +47,7 @@ const initialValuesRegister = {
   location: "",
   occupation: "",
   picture: "",
+  role:"",
 };
 
 const initialValuesLogin = {
@@ -48,6 +57,7 @@ const initialValuesLogin = {
 
 const Form = () => {
   const [pageType, setPageType] = useState("login");
+  const [role, setrole] = useState(false);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -57,11 +67,14 @@ const Form = () => {
 
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
+    
     const formData = new FormData();
     for (let value in values) {
       formData.append(value, values[value]);
     }
     formData.append("picturePath", values.picture.name);
+    formData.append("role", values.role);
+
 
     const savedUserResponse = await fetch(
       "http://localhost:3001/auth/register",
@@ -93,7 +106,11 @@ const Form = () => {
           token: loggedIn.token,
         })
       );
-      navigate("/home");
+      if(loggedIn.user.role === 'admin') {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
     }
   };
 
@@ -152,6 +169,21 @@ const Form = () => {
                   sx={{ gridColumn: "span 2" }}
                 />
                 <TextField
+                label="Role"
+                name="role"
+                select
+                value={values.role}
+                onChange={handleChange}
+                error={Boolean(touched.role) && Boolean(errors.role)}
+                helperText={touched.role && errors.role}
+                sx={{ gridColumn: "span 4" }}
+              >
+                <MenuItem value="utilisateur">Utilisateur</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="directeur">Directeur</MenuItem>
+                <MenuItem value="secrétaire">Secrétaire</MenuItem>
+              </TextField>
+                <TextField
                   label="Location"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -202,10 +234,12 @@ const Form = () => {
                             <EditOutlinedIcon />
                           </FlexBetween>
                         )}
+
                       </Box>
                     )}
                   </Dropzone>
                 </Box>
+
               </>
             )}
 
@@ -230,6 +264,7 @@ const Form = () => {
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
             />
+
           </Box>
 
           {/* BUTTONS */}

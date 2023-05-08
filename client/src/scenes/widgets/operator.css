@@ -1,0 +1,16 @@
+.operator{
+  flex: 4;
+  padding: 20px;
+}
+
+.logo_snrt{
+  display: block;
+  margin: 0 auto;
+  max-width: 20%;
+  height: auto;
+}
+@media (max-width: 600px) {
+    .logo_snrt {
+      max-width: 50%;
+    }
+  }

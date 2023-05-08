@@ -9,6 +9,7 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
+  Popover ,
 } from "@mui/material";
 import {
   Search,
@@ -40,6 +41,19 @@ const Navbar = () => {
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -56,8 +70,9 @@ const Navbar = () => {
             },
           }}
         >
-          Sociopedia
+          Gofacture
         </Typography>
+        
         {isNonMobileScreens && (
           <FlexBetween
             backgroundColor={neutralLight}
@@ -65,14 +80,16 @@ const Navbar = () => {
             gap="3rem"
             padding="0.1rem 1.5rem"
           >
-            <InputBase placeholder="Search..." />
+            <InputBase placeholder="Recherche..." />
             <IconButton>
               <Search />
             </IconButton>
+            
           </FlexBetween>
         )}
       </FlexBetween>
-
+      
+          
       {/* DESKTOP NAV */}
       {isNonMobileScreens ? (
         <FlexBetween gap="2rem">
@@ -83,9 +100,10 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
+          <IconButton>
           <Notifications sx={{ fontSize: "25px" }} />
-          <Help sx={{ fontSize: "25px" }} />
+          </IconButton>
+          
           <FormControl variant="standard" value={fullName}>
             <Select
               value={fullName}
@@ -107,7 +125,7 @@ const Navbar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
-              <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+              <MenuItem onClick={() => dispatch(setLogout())}>Sortir</MenuItem>
             </Select>
           </FormControl>
         </FlexBetween>
@@ -158,9 +176,25 @@ const Navbar = () => {
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: "25px" }} />
-            <Notifications sx={{ fontSize: "25px" }} />
-            <Help sx={{ fontSize: "25px" }} />
+
+      <IconButton onClick={handleClick}>
+        <Notifications sx={{ fontSize: "25px" }} />
+      </IconButton>
+
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
+      </Popover>
+
+
             <FormControl variant="standard" value={fullName}>
               <Select
                 value={fullName}
@@ -186,6 +220,7 @@ const Navbar = () => {
                   Log Out
                 </MenuItem>
               </Select>
+              
             </FormControl>
           </FlexBetween>
         </Box>

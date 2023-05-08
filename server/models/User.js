@@ -37,6 +37,11 @@ const UserSchema = new mongoose.Schema(
     occupation: String,
     viewedProfile: Number,
     impressions: Number,
+    role: {
+      type: String,
+      enum: ['utilisateur', 'admin', 'directeur', 'secrétaire'],
+      default: 'utilisateur'
+    },
   },
   { timestamps: true }
 );
