@@ -13,7 +13,10 @@ import Réceptions from 'scenes/Réceptions/Receptions';
 import AddOperator from 'scenes/AddOperator/AddOperator';
 import Admin from "scenes/Admin/Admin";
 import Jde from "scenes/JDEs/Jde";
-
+import AjouterJde from "scenes/JDEs/AjouterJde";
+import Secrétaire from "scenes/Secrétaire/Secrétaire";
+import Directeur from "scenes/Directeur/Directeur";
+import AjouterUser from "scenes/Admin/AjouterUser";
 
 
 function App() {
@@ -52,20 +55,33 @@ function App() {
             />
               <Route
               path="/:operator/factures/ajouterfacture"
-              element={isAuth ? <AjouterFacture /> : <Navigate to="/" />}
+              element={
+                roleBasedRender(<AjouterFacture />, "utilisateur")
+              }
             />
               <Route
-              path="/Réceptions"
-              element={isAuth ? <Réceptions /> : <Navigate to="/" />}
+              path="/Receptions/:id"
+              element={
+                roleBasedRender(<Réceptions />, "utilisateur")
+              }
             />
               <Route
               path="/AjouterOperator"
-              element={isAuth ? <AddOperator /> : <Navigate to="/" />}
+              element={
+                roleBasedRender(<AddOperator />, "admin")
+              }
             />
+
               <Route
               path="/:operator/Jdes"
               element={
                 roleBasedRender(<Jde />, "utilisateur")
+              }
+            />
+              <Route
+              path="/:operator/Jdes/AjouterJde"
+              element={
+                roleBasedRender(<AjouterJde />, "utilisateur")
               }
             />
 
@@ -75,7 +91,24 @@ function App() {
               roleBasedRender(<Admin />, "admin")
             }
             />
-            
+            <Route
+            path="/secretaire"
+            element={
+              roleBasedRender(<Secrétaire />, "secrétaire")
+            }
+            />
+            <Route
+            path="/directeur"
+            element={
+              roleBasedRender(<Directeur />, "directeur")
+            }
+            />
+            <Route
+            path="/AjouterUtilisateur"
+            element={
+              roleBasedRender(<AjouterUser />, "admin")
+            }
+            />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

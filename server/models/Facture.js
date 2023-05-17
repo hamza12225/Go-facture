@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 
+
 const FacteurSchema = new mongoose.Schema({
   offre:{
     type: String,
@@ -15,11 +16,15 @@ const FacteurSchema = new mongoose.Schema({
     required: true
   },
   dateFacturation: {
-    type: String,
+    type: Date,
     required: true
   },
   dateFin: {
-    type: String,
+    type: Date,
+    required: true
+  },
+  dateDebut: {
+    type: Date,
     required: true
   },
   montantAbonnementHT: {
@@ -42,13 +47,27 @@ const FacteurSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  certifiee :{
+  UserId :{
     type:  String,
+    required: true
+  },
+  sendtoDir :{
+    type:  Boolean,
+    default: false
+  },
+  sendtoSe :{
+    type:  Boolean,
+    default: false
+  },
+  certifiee :{
+    type:  Date,
   },
   envoyeeDALe :{
-    type:  String,
+    type:  Date,
   },
-});
+},
+{ timestamps: true }
+);
 
 const Facteur = mongoose.model("Facteur", FacteurSchema);
 export default Facteur;

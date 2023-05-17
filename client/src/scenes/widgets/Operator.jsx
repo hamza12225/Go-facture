@@ -16,12 +16,13 @@ const OperatorBox = styled(Grid)(({ theme, color }) => ({
   justifyContent: "center",
   width: 200,
   height: 200,
-  backgroundColor: color,
+  backgroundColor: "green",
   color: theme.palette.common.white,
   fontSize: 48,
   borderRadius: 10,
   border: "none",
   cursor: "pointer",
+  textDecoration: "none",
   transition: "all 0.3s ease",
   "&:hover": {
     boxShadow: theme.shadows[4],
@@ -32,6 +33,9 @@ const OperatorBox = styled(Grid)(({ theme, color }) => ({
     transform: "scale(0.95)",
   },
 }));
+const StyledLink = styled(Link)`
+  text-decoration: none;
+`;
 
 function Operator() {
   const [operators, setOperators] = useState([]);
@@ -60,21 +64,27 @@ function Operator() {
 
   return (
     <div className='operator'>
-      <div className='Logo'>
-        <img src={Logo_SNRT} alt='logo' height={200} className='logo_snrt'/> 
-      </div>
-      <Box display="flex" justifyContent="center" paddingTop={'20px'}>
-        <Grid container justifyContent="center" spacing={2}>
-          {operators.map(operator => (
-            <Grid item key={operator.name}>
-              <Link to={`/${operator.name}/factures`}>
-                <OperatorBox color={`rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`}>{operator.name}</OperatorBox>
-              </Link>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-    </div>  
+    <div className='Logo'>
+      <img src={Logo_SNRT} alt='logo' height={200} className='logo_snrt'/> 
+    </div>
+    <Box display="flex" justifyContent="center" paddingTop={'20px'}>
+      <Grid container justifyContent="center" spacing={2}>
+        {operators.map(operator => (
+          <Grid item key={operator.name}>
+            {
+              operator.type === "operator" ? 
+                <StyledLink to={`/${operator.name}/factures`}>
+                  <OperatorBox>{operator.name}</OperatorBox>
+                </StyledLink> :
+                <StyledLink to={`/${operator.name}/Jdes`}>
+                  <OperatorBox>{operator.name}</OperatorBox>
+                </StyledLink>
+            }
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  </div>  
   );
 }
 

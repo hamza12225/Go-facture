@@ -23,8 +23,8 @@ import { Select ,MenuItem} from "@mui/material";
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
   lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
+  email: yup.string().email("email invalide").required("E-mail obligatoire"),
+  password: yup.string().required("obligatoire"),
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
   picture: yup.string().required("required"),
@@ -35,8 +35,8 @@ const registerSchema = yup.object().shape({
 });
 
 const loginSchema = yup.object().shape({
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
+  email: yup.string().email("email invalide !").required("E-mail obligatoire !"),
+  password: yup.string().required("Mot de passe est obligatoire!"),
 });
 
 const initialValuesRegister = {
@@ -108,9 +108,14 @@ const Form = () => {
       );
       if(loggedIn.user.role === 'admin') {
         navigate("/admin");
+      } else if (loggedIn.user.role === 'directeur') {
+        navigate("/directeur");
+      } else if (loggedIn.user.role === 'secrétaire') {
+        navigate("/secretaire");
       } else {
         navigate("/home");
       }
+      
     }
   };
 
@@ -254,7 +259,7 @@ const Form = () => {
               sx={{ gridColumn: "span 4" }}
             />
             <TextField
-              label="Password"
+              label="Mot de passe"
               type="password"
               onBlur={handleBlur}
               onChange={handleChange}
@@ -280,7 +285,7 @@ const Form = () => {
                 "&:hover": { color: palette.primary.main },
               }}
             >
-              {isLogin ? "LOGIN" : "REGISTER"}
+              {isLogin ? "connexion" : "REGISTER"}
             </Button>
             <Typography
               onClick={() => {
@@ -296,9 +301,7 @@ const Form = () => {
                 },
               }}
             >
-              {isLogin
-                ? "Don't have an account? Sign Up here."
-                : "Already have an account? Login here."}
+              
             </Typography>
           </Box>
         </form>

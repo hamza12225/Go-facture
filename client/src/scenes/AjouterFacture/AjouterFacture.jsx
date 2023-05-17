@@ -19,6 +19,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Snackbar from '@mui/material/Snackbar';
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 
 
 const FactureContainer = styled(Container)({
@@ -59,22 +60,26 @@ const FactureContainer = styled(Container)({
   });
 
 function AjouterFacture() {
+  const token = useSelector((state) => state.token);
+  const user = useSelector((state) => state.user);
+
   const [operators, setOperators] = useState([]);
   const [operatorName, setOperatorName] = useState('');
   const { operator } = useParams();
-
 
   const [offre, setOffre] = useState("");
   const [noFacture, setNoFacture] = useState("");
   const [compteFacturation, setCompteFacturation] = useState("");
   const [dateFacturation, setDateFacturation] = useState("");
   const [dateFin, setDateFin] = useState("");
+  const [dateDebut, setDateDebut] = useState("");
   const [montantAbonnementHT, setMontantAbonnementHT] = useState("");
   const [montantCommunicationsHT, setMontantCommunicationsHT] = useState("");
   const [montantTTC, setMontantTTC] = useState("");
   const [totalTTCPayer, setTotalTTCPayer] = useState("");
   const navigate = useNavigate();
 
+  const [montantTTCx, setMontantTTCx] = useState("");
 
   const [open, setOpen] = useState(false);
 
@@ -102,50 +107,35 @@ function AjouterFacture() {
       compteFacturation,
       dateFacturation,
       dateFin,
+      dateDebut,
       montantAbonnementHT,
       montantCommunicationsHT,
-      montantTTC,
+      montantTTC: (Number(montantCommunicationsHT) + Number(montantAbonnementHT) * 1.2).toFixed(2),
       totalTTCPayer,
-      operatorName
+      operatorName:operator,
+      UserId: user._id,
     };
   
     // Check if any input field is null
-    for (const key in formData) {
-      if (formData[key] === null || formData[key] === '') {
-        alert(`Please fill in all required fields`);
-        return;
+
+    axios.post('http://localhost:3001/facteurs/add', formData , {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    }
-  
-    axios.post('http://localhost:3001/facteurs/add', formData)
+    })
       .then(response => {
         console.log(response.data);
         alert(`La Facture est ajouter!`);
-        navigate(`/home`);
+        navigate(`/${operator}/factures`);
 
       })
       .catch(error => {
         console.error(error);
       });
   };
-     
-  useEffect(() => {
-     // Make API call to retrieve operators
-     axios.get('http://localhost:3001/operators')
-        .then(response => {
-           setOperators(response.data);
-        })
-        .catch(error => {
-           console.error(error);
-        });
-  }, []);
-
-  const handleOperatorChange = (event) => {
-    setOperatorName(event.target.value);
- };
 
 
- 
+
   return (
     <Box>
         <Navbar/>
@@ -168,7 +158,7 @@ function AjouterFacture() {
             />
           </Grid>
           <Grid item xs={12}>
-          <FactureField fullWidth label="Operator" variant="outlined" 
+          <FactureField fullWidth label="Operateur" variant="outlined" 
             value={operator}
             InputProps={{
               readOnly: true,
@@ -189,6 +179,7 @@ function AjouterFacture() {
             <FactureField
               fullWidth
               label="Date facturation"
+              type='date'
               variant="outlined"
               value={dateFacturation}
               onChange={(event) => setDateFacturation(event.target.value)}
@@ -197,8 +188,16 @@ function AjouterFacture() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FactureField fullWidth label="Date Fin" variant="outlined"
-                          value={dateFin}
-                          onChange={(event) => setDateFin(event.target.value)}
+            type='date'
+              value={dateFin}
+              onChange={(event) => setDateFin(event.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FactureField fullWidth label="Date dèbut" variant="outlined"
+            type='date'
+              value={dateDebut}
+              onChange={(event) => setDateDebut(event.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -221,31 +220,29 @@ function AjouterFacture() {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FactureField
-              fullWidth
-              label="montantTTC"
-              variant="outlined"
-              value={montantTTC}
-              onChange={(event) => setMontantTTC(event.target.value)}
+          <FactureField
+          fullWidth
+          label="montantTTC"
+          variant="outlined"
+          value={(Number(montantCommunicationsHT) + Number(montantAbonnementHT) * 1.2).toFixed(2)}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
 
-            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FactureField
               fullWidth
               label="totalTTCPayer"
               variant="outlined"
-              value={(montantAbonnementHT+montantTTC+montantCommunicationsHT)*0.2}
-              // onChange={(event) => setTotalTTCPayer(event.target.value)}
-              InputProps={{
-                readOnly: true,
-              }}
+              value={totalTTCPayer}
+              onChange={(event) => setTotalTTCPayer(event.target.value)}
             />
-          </Grid>
-          
-          
+          </Grid>          
         </Grid>
-        <SubmitButton variant="contained" onClick={handleSubmitFacture}>Ajouter</SubmitButton>
+        <Button variant="contained"  style={{marginRight: '10px'}} onClick={handleSubmitFacture}>Ajouter</Button>
+
       </FactureForm>
     </FactureContainer>
 

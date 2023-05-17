@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useEffect } from "react";
 import {
   Box,
   IconButton,
@@ -25,13 +25,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import { Badge } from "@mui/material";
+import axios from 'axios';
 
-const Navbar = () => {
+const DirecteurNavbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  const token = useSelector((state) => state.token);
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -42,18 +45,96 @@ const Navbar = () => {
 
   const fullName = `${user.firstName} ${user.lastName}`;
   const role = `${user.role}`;
+
   const [anchorEl, setAnchorEl] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/notifications/read', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        const fetchedNotifications = response.data;
+        setNotifications(fetchedNotifications);
+      } else {
+        throw new Error('Failed to fetch notifications');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/notifications/read', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (response.status === 200) {
+          const fetchedNotifications = response.data;
+          setNotifications(fetchedNotifications);
+        } else {
+          throw new Error('Failed to fetch notifications');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchNotifications();
+  }, []);
+
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/notifications/${notificationId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        // Update the notifications state to mark the notification as read
+        const updatedNotifications = notifications.map((notification) => {
+          if (notification.id === notificationId) {
+            return { ...notification, status: 'read' };
+          }
+          return notification;
+        });
+        setNotifications(updatedNotifications);
+        fetchNotifications();
+      } else {
+        throw new Error('Failed to mark notification as read');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    // Assuming each notification has a timestamp property
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+
+ 
+  
+  
+  
 
 
   return (
@@ -63,7 +144,7 @@ const Navbar = () => {
           fontWeight="bold"
           fontSize="clamp(1rem, 2rem, 2.25rem)"
           color="primary"
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/directeur")}
           sx={{
             "&:hover": {
               color: primaryLight,
@@ -101,9 +182,47 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <IconButton>
-          <Notifications sx={{ fontSize: "25px" }} />
-          </IconButton>
+
+      <IconButton aria-describedby={id} onClick={handleClick}>
+      <Badge badgeContent={notifications.filter(notification => notification.status === 'unread').length} color="error">
+        <Notifications sx={{ fontSize: "25px" }} />
+      </Badge>
+    </IconButton>
+
+    {/* Popover */}
+    <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          PaperProps={{
+            sx: {
+              p: 2, // Adjust the padding as needed
+            },
+          }}
+        >
+
+          {sortedNotifications.map((notification, index) => (
+            <Typography
+              key={notification._id}
+              sx={{
+                p: 1, // Adjust the padding within each notification
+                backgroundColor: notification.status === 'read' ? theme.palette.background.paper : theme.palette.background.default,
+                color: theme.palette.text.primary,
+                cursor: 'pointer',
+                mb: index !== notifications.length - 1 ? 1 : 0, // Add margin-bottom to all notifications except the last one
+                borderRadius: '8px', // Add border radius
+              }}
+              onClick={() => markNotificationAsRead(notification._id)}
+            >
+              {notification.message}
+            </Typography>
+          ))}
+        </Popover>
           
           <FormControl variant="standard" value={fullName}>
             <Select
@@ -181,22 +300,46 @@ const Navbar = () => {
               )}
             </IconButton>
 
-      <IconButton onClick={handleClick}>
-        <Notifications sx={{ fontSize: "25px" }} />
-      </IconButton>
+            <IconButton onClick={handleClick}>
+            <Badge badgeContent={notifications.length} color="error">
+              <Notifications sx={{ fontSize: "25px" }} />
+            </Badge>
+          </IconButton>
 
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
-      </Popover>
+          {/* Popover */}
+          <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          PaperProps={{
+            sx: {
+              p: 2, // Adjust the padding as needed
+            },
+          }}
+        >
+          {notifications.map((notification, index) => (
+            <Typography
+              key={notification.id}
+              sx={{
+                p: 1, // Adjust the padding within each notification
+                backgroundColor: notification.status === 'read' ? '#e0e0e0' : '#ffffff',
+                cursor: 'pointer',
+                mb: index !== notifications.length - 1 ? 1 : 0, // Add margin-bottom to all notifications except the last one
+                borderRadius: '8px', // Add border radius
+              }}
+              onClick={() => markNotificationAsRead(notification.id)}
+            >
+              {notification.message}
+            </Typography>
+          ))}
+        </Popover>
+
+
 
 
             <FormControl variant="standard" value={fullName}>
@@ -233,4 +376,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default DirecteurNavbar;

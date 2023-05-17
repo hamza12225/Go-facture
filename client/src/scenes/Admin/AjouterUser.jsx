@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from "scenes/Admin/AdminNavbar";
+import Navbar from "./AdminNavbar";
 import styled from "@mui/material/styles/styled";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -21,6 +21,7 @@ import Snackbar from '@mui/material/Snackbar';
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
+import { Password } from '@mui/icons-material';
 
 
 const FactureContainer = styled(Container)({
@@ -60,94 +61,115 @@ const FactureContainer = styled(Container)({
     minWidth: 200,
   });
 
-function AddOperator() {
+function AjouterUser() {
   const token = useSelector((state) => state.token);
-  const [Nom, setNom] = useState("");
-  const [Type, setType] = useState("");
+
+  const [operators, setOperators] = useState([]);
+  const [operatorName, setOperatorName] = useState('');
+  const [role, setRole] = useState("");
+
+
+  const [Nom, SetNom] = useState("");
+  const [Prenom, SetPrenom] = useState("");
+  const [Email, SetEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
+
 
   const navigate = useNavigate();
 
-  const handleSubmitOperator = (event) => {
+
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleSubmitUser = (event) => {
     event.preventDefault();
   
     const formData = {
-      name: Nom,
-      type: Type,
+      firstName: Nom,
+      lastName: Prenom,
+      email: Email,
+      password: passwordValue,
+      role : role,
     };
   
-
     // Check if any input field is null
-
-    axios.post('http://localhost:3001/operators/add', formData , {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+  
+    axios.post('http://localhost:3001/auth/register', formData, {
+      // headers: {
+      //   Authorization: `Bearer ${token}`
+      // }
     })
       .then(response => {
         console.log(response.data);
-        alert(`Operator est ajouter!`);
-        createNotification(`ADMIN`, `un nouvel opérateur est ajouté  : ${Nom} le ${timestamp} `);
+        alert(`Utilisateur Ajouter!`);
         navigate(`/admin`);
       })
       .catch(error => {
         console.error(error);
       });
   };
-  const timestamp = new Date().toISOString().split('T')[0];
-
-  const createNotification = async (userId, message) => {
-    try {
-      const response = await axios.post(
-        'http://localhost:3001/notifications',
-        { userId, message },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-  
-
-      if (response.status === 201) {
-        const notification = response.data;
-        console.log('Notification created:', notification);
-      } else {
-        throw new Error('Failed to create notification');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-
-
-
   return (
     <Box>
         <Navbar/>
         <FactureContainer maxWidth="md">
-      <FactureTitle variant="h4">Ajouter Operator</FactureTitle>
+      <FactureTitle variant="h4">Ajouter Utilisateur</FactureTitle>
       <FactureForm>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <FactureField fullWidth label="Nom Operator" 
+            <FactureField fullWidth label="Nom" 
             variant="outlined"
             value={Nom}
-            onChange={(event) => setNom(event.target.value)}
+            onChange={(event) => SetNom(event.target.value)}
              />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FactureField fullWidth label="Prènom" variant="outlined" 
+            value={Prenom}
+            onChange={(event) => SetPrenom(event.target.value)}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField
-                label="Catégorie de operateur"
+                label="Role"
                 fullWidth
                 name="role"
                 select
-                value={Type}
-                onChange={(event) => setType(event.target.value)}
-                sx={{ gridColumn: "span 4" }}
-            >
-                <MenuItem value="operator">Operateur de communication</MenuItem>
-                <MenuItem value="JDE">JDE</MenuItem>  
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                sx={{ gridColumn: "span 4" }} >
+                <MenuItem value="utilisateur">Utilisateur</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="directeur">Directeur</MenuItem>
+                <MenuItem value="secrétaire">Secrétaire</MenuItem>
             </TextField>
             </Grid>
+          <Grid item xs={12} sm={6}>
+            <FactureField
+              fullWidth
+              label="Email"
+              value={Email}
+              onChange={(event) => SetEmail(event.target.value)}
+
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+          <FactureField
+            fullWidth
+            type="password"
+            label="Mot de passe"
+            variant="outlined"
+            value={passwordValue}
+            onChange={(event) => setPasswordValue(event.target.value)}
+          />
+          </Grid>     
         </Grid>
-        <Button variant="contained"  style={{marginRight: '10px' ,marginTop:'20px'}} onClick={handleSubmitOperator}>Ajouter</Button>
+        <Button variant="contained"  style={{marginRight: '10px'}} onClick={handleSubmitUser} >Ajouter</Button>
+
       </FactureForm>
     </FactureContainer>
 
@@ -157,5 +179,5 @@ function AddOperator() {
 }
 
 
-export default AddOperator;
+export default AjouterUser;
 

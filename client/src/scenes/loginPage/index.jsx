@@ -1,5 +1,6 @@
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Form from "./Form";
+import Logo_SNRT from "./Logo_SNRT.jpg";
 
 const LoginPage = () => {
   const theme = useTheme();
@@ -24,7 +25,10 @@ const LoginPage = () => {
         borderRadius="1.5rem"
         backgroundColor={theme.palette.background.alt}
       >
-        <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
+        <div className='Logo'>
+          <img src={Logo_SNRT} alt='logo' height={300} width={300} className='logo_snrt'/> 
+        </div>
+        <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }} style={{marginTop:'20px'}}>
           Bienvenue à Gofacture, pour la gestion factures de SNRT!
         </Typography>
         <Form />

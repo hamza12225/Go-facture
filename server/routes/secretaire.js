@@ -1,11 +1,10 @@
 import express from "express";
-import { login ,getUsers,register } from "../controllers/auth.js";
 import { verifyToken ,checkRole} from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/login", login);
-
-router.get("/users", getUsers);
-
+router.get('/', verifyToken,checkRole('secrétaire') ,(req, res) => {
+    res.send('Welcome, secrétaire!');
+  });
+  
 export default router;

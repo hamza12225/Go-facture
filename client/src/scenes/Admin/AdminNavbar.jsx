@@ -41,6 +41,8 @@ const AdminNavbar = () => {
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
+  const role = `${user.role}`;
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -122,6 +124,9 @@ const AdminNavbar = () => {
               }}
               input={<InputBase />}
             >
+              <MenuItem value={role}>
+                <Typography>  Privilege : {role}</Typography>
+              </MenuItem>
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
