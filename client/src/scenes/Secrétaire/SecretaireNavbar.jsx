@@ -28,7 +28,7 @@ import FlexBetween from "components/FlexBetween";
 import { Badge } from "@mui/material";
 import axios from 'axios';
 
-const DirecteurNavbar = () => {
+const SecretaireNavbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -86,8 +86,8 @@ const DirecteurNavbar = () => {
         });
   
         if (response.status === 200) {
-          const fetchedNotifications = response.data.filter(notification => notification.userId !== "forse");
-          setNotifications(fetchedNotifications);
+            const fetchedNotifications = response.data.filter(notification => notification.userId === "forse");
+            setNotifications(fetchedNotifications);
         } else {
           throw new Error('Failed to fetch notifications');
         }
@@ -376,4 +376,4 @@ const DirecteurNavbar = () => {
   );
 };
 
-export default DirecteurNavbar;
+export default SecretaireNavbar;

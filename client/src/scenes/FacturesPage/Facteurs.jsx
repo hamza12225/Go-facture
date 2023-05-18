@@ -95,7 +95,7 @@ function Factures() {
           );
       
           const facturesWithId = response.data
-          .filter((facture) => facture.UserId === user._id) // Filter factures by UserId
+        
           .map((facture) => ({
             id: uuidv4(),
             ...facture,

@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react'
 import { Box, useMediaQuery, Button } from "@mui/material";
 import { useSelector } from "react-redux";
-import Navbar from "scenes/navbar";
+import Navbar from "./SecretaireNavbar";
 import { Link } from "react-router-dom";
 import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import { CSVLink } from 'react-csv';

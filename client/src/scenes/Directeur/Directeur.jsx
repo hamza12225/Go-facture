@@ -31,6 +31,8 @@ function Directeur() {
   const token = useSelector((state) => state.token);
   const [factureDate, setFactureDate] = useState('');
   const [selectedRows, setSelectedRows] = useState([]);
+  const user = useSelector((state) => state.user);
+
 
   
   const handleClick = () => {
@@ -112,6 +114,29 @@ function Directeur() {
     { field: "totalTTCPayer", headerName: "Total TTC à payer", width: 120 },
     { field: "operatorName", headerName: "Nom Operateur", width: 120 },
   ];
+
+  const createNotification = async (userId, message) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:3001/notifications',
+        { userId, message },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      if (response.status === 201) {
+        const notification = response.data;
+        console.log('Notification created:', notification);
+      } else {
+        throw new Error('Failed to create notification');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  
+  
+  
   const handleSubmitPopup = async (date) => {
     const selectedDate = new Date(date);
     const selectedMonth = selectedDate.getMonth();
@@ -155,8 +180,9 @@ function Directeur() {
   
         if (!response.ok) throw new Error(`Failed to update facture ${facture._id}`);
       }
-  
+      const timestamp = new Date().toISOString().split('T')[0];
       alert(`${count} facteurs sont envoyés à secrétaire pour envoyer à DA!`);
+      createNotification(`forse`, `${count} factures ont été envoyées par le directeur ${user.firstName} ${user.lastName}, le ${timestamp}`);
       GetFactures(operator);
       
     } catch (error) {
