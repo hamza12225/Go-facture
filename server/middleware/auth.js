@@ -37,7 +37,7 @@ export const checkRole = (role) => {
         next();
       } else {
         // The user does not have the required role, so send an error response
-        res.status(401).json({ message: 'Unauthorized' });
+        res.status(401).json({ message: 'Non autorisé!' });
       }
     } catch (err) {
       console.error(err.message);

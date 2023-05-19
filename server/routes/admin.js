@@ -9,7 +9,6 @@ router.get('/', verifyToken,checkRole('admin') ,(req, res) => {
     res.send('Welcome, admin!');
   });
 
-
 // router.get("/users", verifyToken, checkRole('admin'), getUsers);
 
 export default router;

@@ -45,3 +45,25 @@ export const CreateNotification = async (req, res) => {
       res.status(500).json({ error: 'Failed to mark notification as read' });
     }
   };
+
+
+  export const MakeNotificationsRead = async (req, res) => {
+    try {
+      // Find all notifications with status 'unread'
+      const readNotifications = await Notification.find({ status: 'unread' });
+  
+      // Update each notification to mark it as 'read'
+      const updatePromises = readNotifications.map(notification => {
+        return Notification.findByIdAndUpdate(notification._id, { status: 'read' });
+      });
+  
+      // Execute all update promises concurrently
+      await Promise.all(updatePromises);
+  
+      res.sendStatus(200);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to update notifications' });
+    }
+  };
+  
