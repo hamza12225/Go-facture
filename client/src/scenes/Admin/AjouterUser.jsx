@@ -99,9 +99,9 @@ function AjouterUser() {
     // Check if any input field is null
   
     axios.post('http://localhost:3001/auth/register', formData, {
-      // headers: {
-      //   Authorization: `Bearer ${token}`
-      // }
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
       .then(response => {
         console.log(response.data);

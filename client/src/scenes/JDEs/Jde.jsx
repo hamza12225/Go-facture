@@ -102,23 +102,30 @@ function Jde() {
 
 
       const handleExport = (data) => {
-        const formattedData = data.map((row) => ({
-          'Numéro de commande (JDE)': row.numeroCommandeJDE,
-          'Type de la commande': row.typeCommande,
-          'Fournisseur': row.fournisseur,
-          'Type fournisseur': row.typeFournisseur,
-          'Code fournisseur (JDE)': row.codeFournisseurJDE,
-          'N°Manuel SNRT': row.numeroManuelSNRT,
-          'Montant TTC (Global)': row.montantTTCGlobal,
-        }));
-      
-        const worksheet = XLSX.utils.json_to_sheet(formattedData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Factures');
-        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const excelData = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        saveAs(excelData, 'Jdes.xlsx');
-      };
+  const formattedData = data.map((row) => ({
+    'Numéro de commande (JDE)': row.numeroCommandeJDE,
+    'Type de la commande': row.typeCommande,
+    'Fournisseur': row.fournisseur,
+    'Type fournisseur': row.typeFournisseur,
+    'Code fournisseur (JDE)': row.codeFournisseurJDE,
+    'N°Manuel SNRT': row.numeroManuelSNRT,
+    'Montant TTC (Global)': row.montantTTCGlobal,
+    'Réceptions': row.receptions.map((reception) => ({
+      'Numéro de facture': reception.numeroFacture,
+      'Numéro de document de réception': reception.numeroDocumentReception,
+      'Montant TTC': reception.montantTTC,
+      'Date': reception.date,
+    })),
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData.flat());
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Factures');
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const excelData = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  saveAs(excelData, 'Jdes.xlsx');
+};
+
       
   return (
       <Box>

@@ -10,6 +10,7 @@ import {
   useTheme,
   useMediaQuery,
   Popover ,
+  Button,
 } from "@mui/material";
 import {
   Search,
@@ -48,10 +49,17 @@ const DirecteurNavbar = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [showMoreNotifications, setShowMoreNotifications] = useState(false);
+
+
+  const handleClickShowMore = () => {
+    setShowMoreNotifications(!showMoreNotifications);
+  };
 
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    markAllNotificationsAsRead();
   };
   
   const handleClose = () => {
@@ -125,6 +133,32 @@ const DirecteurNavbar = () => {
     }
   };
 
+
+  const markAllNotificationsAsRead = async () => {
+    try {
+      const response = await axios.put(
+        'http://localhost:3001/notifications/makeRead',
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        // Update the notifications state to mark all notifications as read
+        const updatedNotifications = notifications.map((notification) => {
+          return { ...notification, status: 'read' };
+        });
+        setNotifications(updatedNotifications);
+        fetchNotifications();
+      } else {
+        throw new Error('Failed to mark all notifications as read');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
   const sortedNotifications = [...notifications].sort((a, b) => {
     // Assuming each notification has a timestamp property
     return new Date(b.timestamp) - new Date(a.timestamp);
@@ -155,20 +189,7 @@ const DirecteurNavbar = () => {
           Gofacture
         </Typography>
         
-        {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius="9px"
-            gap="3rem"
-            padding="0.1rem 1.5rem"
-          >
-            <InputBase placeholder="Recherche..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-            
-          </FlexBetween>
-        )}
+     
       </FlexBetween>
       
           
@@ -190,39 +211,44 @@ const DirecteurNavbar = () => {
     </IconButton>
 
     {/* Popover */}
-    <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          PaperProps={{
-            sx: {
-              p: 2, // Adjust the padding as needed
-            },
-          }}
-        >
+          <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        PaperProps={{
+          sx: {
+            p: 2, // Adjust the padding as needed
+          },
+        }}
+      >
+        {sortedNotifications.slice(0, showMoreNotifications ? undefined : 5).map((notification, index) => (
+          <Typography
+            key={notification._id}
+            sx={{
+              p: 1, // Adjust the padding within each notification
+              backgroundColor: notification.status === 'read' ? theme.palette.background.paper : theme.palette.background.default,
+              color: theme.palette.text.primary,
+              cursor: 'pointer',
+              mb: index !== notifications.length - 1 ? 1 : 0, // Add margin-bottom to all notifications except the last one
+              borderRadius: '8px', // Add border radius
+            }}
+            onClick={() => markNotificationAsRead(notification._id)}
+          >
+            {notification.message}
+            
+          </Typography>
+        ))}
 
-          {sortedNotifications.map((notification, index) => (
-            <Typography
-              key={notification._id}
-              sx={{
-                p: 1, // Adjust the padding within each notification
-                backgroundColor: notification.status === 'read' ? theme.palette.background.paper : theme.palette.background.default,
-                color: theme.palette.text.primary,
-                cursor: 'pointer',
-                mb: index !== notifications.length - 1 ? 1 : 0, // Add margin-bottom to all notifications except the last one
-                borderRadius: '8px', // Add border radius
-              }}
-              onClick={() => markNotificationAsRead(notification._id)}
-            >
-              {notification.message}
-            </Typography>
-          ))}
-        </Popover>
+      <Button onClick={handleClickShowMore} variant="outlined">
+        {showMoreNotifications ? 'Afficher moins' : 'Afficher plus'}
+      </Button>
+
+      </Popover>
           
           <FormControl variant="standard" value={fullName}>
             <Select

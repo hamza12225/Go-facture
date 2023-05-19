@@ -48,10 +48,32 @@ const SecretaireNavbar = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [showMoreNotifications, setShowMoreNotifications] = useState(false);
+
+
+  const markAllNotificationsAsRead = async () => {
+    try {
+      const response = await axios.put(
+        'http://localhost:3001/notifications/makeRead',
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status === 200) {
+        fetchNotifications();
+      } else {
+        throw new Error('Failed to mark all notifications as read');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    markAllNotificationsAsRead();
   };
   
   const handleClose = () => {
@@ -68,8 +90,8 @@ const SecretaireNavbar = () => {
       });
 
       if (response.status === 200) {
-        const fetchedNotifications = response.data;
-        setNotifications(fetchedNotifications);
+          const fetchedNotifications = response.data.filter(notification => notification.userId === "forse");
+          setNotifications(fetchedNotifications);
       } else {
         throw new Error('Failed to fetch notifications');
       }
@@ -78,24 +100,7 @@ const SecretaireNavbar = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/notifications/read', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        if (response.status === 200) {
-            const fetchedNotifications = response.data.filter(notification => notification.userId === "forse");
-            setNotifications(fetchedNotifications);
-        } else {
-          throw new Error('Failed to fetch notifications');
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
+  useEffect(() => {  
     fetchNotifications();
   }, []);
 
@@ -124,6 +129,7 @@ const SecretaireNavbar = () => {
       console.error(error);
     }
   };
+  
 
   const sortedNotifications = [...notifications].sort((a, b) => {
     // Assuming each notification has a timestamp property
@@ -154,21 +160,7 @@ const SecretaireNavbar = () => {
         >
           Gofacture
         </Typography>
-        
-        {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius="9px"
-            gap="3rem"
-            padding="0.1rem 1.5rem"
-          >
-            <InputBase placeholder="Recherche..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-            
-          </FlexBetween>
-        )}
+      
       </FlexBetween>
       
           

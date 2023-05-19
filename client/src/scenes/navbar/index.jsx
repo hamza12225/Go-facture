@@ -74,23 +74,9 @@ const Navbar = () => {
           Gofacture
         </Typography>
         
-        {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius="9px"
-            gap="3rem"
-            padding="0.1rem 1.5rem"
-          >
-            <InputBase placeholder="Recherche..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-            
-          </FlexBetween>
-        )}
+
       </FlexBetween>
-      
-          
+    
       {/* DESKTOP NAV */}
       {isNonMobileScreens ? (
         <FlexBetween gap="2rem">
