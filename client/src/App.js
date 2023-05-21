@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import HomePage from "scenes/homePage";
 import LoginPage from "scenes/loginPage";
-import ProfilePage from "scenes/profilePage";
 import AjouterFacture from "scenes/AjouterFacture/AjouterFacture"
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
@@ -45,13 +44,11 @@ function App() {
                 roleBasedRender(<HomePage />, "utilisateur")
               }
             />
-            <Route
-              path="/profile/:userId"
-              element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
-            />
               <Route
               path="/:operator/factures"
-              element={isAuth ? <FacturesPage /> : <Navigate to="/" />}
+              element={
+                roleBasedRender(<FacturesPage />, "utilisateur")
+              }
             />
               <Route
               path="/:operator/factures/ajouterfacture"
@@ -71,7 +68,6 @@ function App() {
                 roleBasedRender(<AddOperator />, "admin")
               }
             />
-
               <Route
               path="/:operator/Jdes"
               element={

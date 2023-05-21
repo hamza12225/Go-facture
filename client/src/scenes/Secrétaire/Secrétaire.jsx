@@ -177,7 +177,6 @@ function Secrétaire() {
     try {
       for (const facture of filteredData) {
         facture.sendtoDir = true;
-        console.log(JSON.stringify(facture));
         const response = await fetch(
           `http://localhost:3001/facteurs/${facture._id}/da`, // Use originalId instead of id
           {
@@ -211,7 +210,6 @@ function Secrétaire() {
   
       if (response.status === 201) {
         const notification = response.data;
-        console.log('Notification created:', notification);
       } else {
         throw new Error('Failed to create notification');
       }

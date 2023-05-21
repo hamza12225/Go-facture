@@ -104,7 +104,6 @@ function AjouterUser() {
       }
     })
       .then(response => {
-        console.log(response.data);
         alert(`Utilisateur Ajouter!`);
         navigate(`/admin`);
       })

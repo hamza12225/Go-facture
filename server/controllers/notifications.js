@@ -1,6 +1,5 @@
 import Notification from "../models/Notification.js";
 
-
 export const CreateNotification = async (req, res) => {
     try {
         // Retrieve the necessary data from the request body
@@ -12,8 +11,7 @@ export const CreateNotification = async (req, res) => {
           userId,
         });
         // Save the notification to the database
-        await notification.save();
-    
+        await notification.save();  
         res.status(201).json(notification);
       } catch (error) {
         console.error(error);

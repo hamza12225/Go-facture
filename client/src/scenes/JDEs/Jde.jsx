@@ -63,7 +63,6 @@ function Jde() {
       }));
       
       setJdes(JdesWithId);
-      console.log(JdesWithId)
     } catch (error) {
       console.error(error);
       // Handle the error here

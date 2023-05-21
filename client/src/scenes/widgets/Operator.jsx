@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import WidgetWrapper from "components/WidgetWrapper";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import Logo_SNRT from './Logo_SNRT.png';
 import operator from './operator.css'

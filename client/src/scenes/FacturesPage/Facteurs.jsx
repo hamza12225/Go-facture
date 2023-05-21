@@ -52,7 +52,8 @@ function Factures() {
       </GridToolbarContainer>
     );
   }
-  
+
+
 
     const columns = [
         { field: "offre", headerName: "Offre", width: 150 },
@@ -134,12 +135,9 @@ function Factures() {
             { userId, message },
             { headers: { Authorization: `Bearer ${token}` } }
           );
-      
-          console.log('Notification response:', response.status, response.data);
-      
-          if (response.status === 200) {
+            
+          if (response.status === 201) {
             const notification = response.data;
-            console.log('Notification created:', notification);
           } else {
             throw new Error('Failed to create notification');
           }
@@ -208,7 +206,6 @@ function Factures() {
       const handleSnackbarClose = () => {
         setOpenSnackbar(false);
       };
-      console.log(data);
       
       
       function DatePopup({ open, onClose, onSubmit }) {

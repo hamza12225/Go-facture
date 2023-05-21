@@ -124,7 +124,6 @@ function AjouterFacture() {
       }
     })
       .then(response => {
-        console.log(response.data);
         alert(`La Facture est ajouter!`);
         navigate(`/${operator}/factures`);
 

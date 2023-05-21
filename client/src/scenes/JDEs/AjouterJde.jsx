@@ -113,7 +113,6 @@ function AjouterJde() {
       })
     
       .then(response => {
-        console.log(response.data);
         alert(`Le Jde est ajouté!`);
         navigate(`/home`);
       })

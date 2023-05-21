@@ -25,6 +25,7 @@ import User from "./models/User.js";
 import Post from "./models/Post.js";
 import { users, posts } from "./data/index.js";
 
+
 // import adminRoutes from "./routes/admin.js"
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -67,6 +68,9 @@ app.use("/secretaire",secrétaireRoutes)
 app.use("/notifications",notificationsRoutes)
 
 
+
+
+
 const uri = "mongodb+srv://SNRTDB:SNRTDB@cluster0.xkmpvai.mongodb.net/<dbname>?retryWrites=true&w=majority";
 
 /* MONGOOSE SETUP */
@@ -87,3 +91,5 @@ mongoose
   console.log(`${error} did not connect`)
   
   );
+
+

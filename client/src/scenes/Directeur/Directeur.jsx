@@ -125,7 +125,6 @@ function Directeur() {
   
       if (response.status === 201) {
         const notification = response.data;
-        console.log('Notification created:', notification);
       } else {
         throw new Error('Failed to create notification');
       }
